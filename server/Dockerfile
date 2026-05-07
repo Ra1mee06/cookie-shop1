@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm install
+
+COPY prisma ./prisma
+COPY tsconfig.json ./
+COPY src ./src
+
+EXPOSE 4000
+
+CMD ["npm", "run", "dev"]
