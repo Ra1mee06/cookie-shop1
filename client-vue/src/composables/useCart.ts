@@ -92,7 +92,6 @@ export function useCart() {
   };
 
   window.addEventListener('auth-state-changed', () => {
-    // On auth transitions, switch cart context and drop guest cart.
     switchCartForCurrentAuth(true);
   });
 

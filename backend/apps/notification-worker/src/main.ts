@@ -12,8 +12,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const run = async () => {
   logger.info({ streamKey }, "notification worker started");
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (;;) {
     try {
       const events = await redis.xread("BLOCK", 5000, "STREAMS", streamKey, lastId);
       if (!events) {

@@ -18,7 +18,6 @@ const selectedFieldErrors = ref({
   email: ''
 })
 
-// Filters & pagination
 const search = ref('')
 const page = ref(1)
 const pageSize = ref(10)
@@ -41,7 +40,6 @@ const paginated = computed(() => {
   return filtered.value.slice(start, start + pageSize.value)
 })
 
-// Metrics and export
 const metrics = computed(() => {
   const out = { count: filtered.value.length, admins: 0, users: 0 }
   for (const u of filtered.value) {
@@ -74,7 +72,6 @@ const load = async () => {
   loading.value = true
   error.value = ''
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   const user = localStorage.getItem('user')
   console.log('Загрузка пользователей. userId:', userId, 'user:', user)
@@ -93,10 +90,8 @@ const load = async () => {
     console.log('response.data type:', typeof response.data)
     console.log('response.data isArray:', Array.isArray(response.data))
     
-    // Проверяем разные форматы ответа
     let data = response.data
     if (data && typeof data === 'object' && !Array.isArray(data)) {
-      // Если это объект, возможно данные внутри
       if (data.data && Array.isArray(data.data)) {
         data = data.data
       } else if (data.users && Array.isArray(data.users)) {
@@ -193,7 +188,6 @@ const removeUser = async (u) => {
   await load()
 }
 
-// Generate one-time admin invite code for user
 const generatedCode = ref('')
 const generating = ref(false)
 const generateAdminCode = async () => {

@@ -1,10 +1,9 @@
-/** @type {import('tailwindcss').Config} */
+
 module.exports = {
-  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  content: ['./index.html', './src*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Crumble Cookie inspired colors
         cookie: {
           50: '#FFF5F7',
           100: '#FFE8ED',
@@ -39,7 +38,6 @@ module.exports = {
           600: '#D4C4A8',
           700: '#B8A082',
         },
-        // Keep lime for backward compatibility but add cookie as primary
         lime: {
           500: '#84cc16',
           600: '#65a30d',

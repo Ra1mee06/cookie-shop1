@@ -16,12 +16,9 @@ const {
   closeDrawer,
 } = useCart();
 
-// Инициализируем избранное для глобального состояния и загружаем данные с сервера
 const { fetchFavorites } = useFavorites();
 
-// Загружаем избранное при монтировании компонента
 onMounted(async () => {
-  // Восстанавливаем userId если пользователь залогинен
   const savedUser = localStorage.getItem('user')
   if (savedUser) {
     try {
@@ -34,8 +31,6 @@ onMounted(async () => {
     }
   }
   
-  // Загружаем избранное с сервера при инициализации приложения
-  // Используем force=true для гарантии актуальных данных при первой загрузке
   try {
     await fetchFavorites(true);
   } catch (err) {
@@ -46,7 +41,7 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <!-- Header вынесен наружу для правильной работы sticky -->
+    
     <Header 
       :total-price="totalPrice" 
       @open-drawer="openDrawer" 

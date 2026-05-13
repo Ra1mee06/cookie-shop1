@@ -7,7 +7,6 @@ const router = useRouter()
 const selectedNews = ref(null)
 const showNewsModal = ref(false)
 
-// Данные для ленты новостей и спецпредложений
 const newsItems = ref([
   {
     id: 1,
@@ -88,7 +87,6 @@ const closeNewsModal = () => {
 }
 
 onMounted(() => {
-  // Автоматическая прокрутка каждые 5 секунд
   setInterval(() => {
     if (isAutoPlaying.value) {
       nextSlide()
@@ -99,7 +97,7 @@ onMounted(() => {
 
 <template>
   <div class="relative w-full mb-12 overflow-hidden rounded-2xl shadow-2xl">
-    <!-- Основной слайдер -->
+    
     <div class="relative h-96 md:h-[500px]">
       <div 
         v-for="(item, index) in newsItems" 
@@ -115,7 +113,7 @@ onMounted(() => {
           class="relative h-full w-full bg-gradient-to-br"
           :class="`${item.gradient}`"
         >
-          <!-- Фоновое изображение -->
+          
           <div class="absolute inset-0 opacity-20">
             <img 
               :src="item.image" 
@@ -124,7 +122,7 @@ onMounted(() => {
             />
           </div>
           
-          <!-- Контент -->
+          
           <div class="relative z-10 h-full flex flex-col justify-center items-start p-8 md:p-16 text-white">
             <div class="max-w-2xl">
               <span 
@@ -151,14 +149,14 @@ onMounted(() => {
             </div>
           </div>
           
-          <!-- Декоративные элементы -->
+          
           <div class="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           <div class="absolute bottom-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         </div>
       </div>
     </div>
     
-    <!-- Навигационные стрелки -->
+    
     <button
       @click="prevSlide"
       class="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transform hover:scale-110 transition-all duration-300"
@@ -179,7 +177,7 @@ onMounted(() => {
       </svg>
     </button>
     
-    <!-- Индикаторы -->
+    
     <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
       <button
         v-for="(item, index) in newsItems"
@@ -193,7 +191,7 @@ onMounted(() => {
       ></button>
     </div>
 
-    <!-- Модальное окно новости -->
+    
     <NewsModal
       :isOpen="showNewsModal"
       :newsItem="selectedNews"

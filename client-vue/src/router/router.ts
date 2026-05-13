@@ -6,7 +6,6 @@ import Privacy from '@/pages/Privacy.vue'
 import Terms from '@/pages/Terms.vue'
 const AdminOrders = () => import('@/pages/AdminOrders.vue').catch(err => {
   console.error('Failed to load AdminOrders component:', err);
-  // Возвращаем пустой компонент вместо редиректа
   return { default: { template: '<div>Ошибка загрузки страницы заказов</div>' } };
 });
 const AdminUsers = () => import('@/pages/AdminUsers.vue')
@@ -83,15 +82,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // Если есть сохраненная позиция (например, при нажатии назад), используем её
     if (savedPosition) {
       return savedPosition
     }
-    // Если переходим на ту же страницу (например, клик на "Главная" когда уже на главной), не скроллим
     if (to.path === from.path) {
       return false
     }
-    // По умолчанию не скроллим при переходе между страницами
     return { left: 0, top: 0 }
   }
 })

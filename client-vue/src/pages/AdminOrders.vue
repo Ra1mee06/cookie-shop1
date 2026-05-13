@@ -7,11 +7,9 @@ import AdminNav from '@/components/AdminNav.vue'
 const router = useRouter()
 const { admin } = useApi()
 
-// Обработка ошибок компонента
 onErrorCaptured((err, instance, info) => {
   console.error('AdminOrders component error:', err, info)
-  // Не редиректим, просто логируем ошибку
-  return true // Разрешаем дальнейшее распространение ошибки для отладки
+  return true
 })
 const orders = ref([])
 const loading = ref(false)
@@ -19,7 +17,6 @@ const error = ref('')
 const editing = ref(null)
 const form = ref({ recipient: '', address: '', comment: '', paymentMethod: 'CASH' })
 
-// Filters & pagination
 const search = ref('')
 const statusFilter = ref('')
 const dateFrom = ref('')
@@ -37,7 +34,6 @@ const filtered = computed(() => {
     arr = arr.filter(o => o.createdAt && new Date(o.createdAt) >= from)
   }
   if (dateTo.value) {
-    // Include entire day
     const to = new Date(dateTo.value)
     to.setHours(23,59,59,999)
     arr = arr.filter(o => o.createdAt && new Date(o.createdAt) <= to)
@@ -60,7 +56,6 @@ const paginated = computed(() => {
   return filtered.value.slice(start, start + pageSize.value)
 })
 
-// Metrics
 const metrics = computed(() => {
   const out = { count: filtered.value.length, sum: 0, byStatus: {} }
   for (const o of filtered.value) {
@@ -72,7 +67,6 @@ const metrics = computed(() => {
   return out
 })
 
-// Build data series for last 14 days
 const lastDays = 14
 const seriesByDay = computed(() => {
   const map = new Map()
@@ -122,7 +116,6 @@ const load = async () => {
   loading.value = true
   error.value = ''
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   console.log('Загрузка заказов. userId:', userId)
   
@@ -138,7 +131,6 @@ const load = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Проверяем разные форматы ответа
     let data = response.data
     if (data && typeof data === 'object' && !Array.isArray(data)) {
       if (data.data && Array.isArray(data.data)) {
@@ -209,7 +201,6 @@ const cancelEdit = () => {
   editing.value = null
 }
 
-// Details modal
 const showDetails = ref(false)
 const details = ref(null)
 const openDetails = async (o) => {
@@ -579,7 +570,7 @@ const closeDetails = () => { showDetails.value = false; details.value = null }
     </div>
   </div>
   
-  <!-- Order details modal -->
+  
   <div v-if="showDetails" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border-2 border-beige-200">
       <div class="sticky top-0 bg-white border-b-2 border-beige-200 p-6 flex justify-between items-center z-10">

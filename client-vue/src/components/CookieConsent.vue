@@ -85,7 +85,6 @@ const rejectAll = () => saveConsent({ necessary: true, analytics: false, marketi
 
 const openSettings = () => {
   isSettingsOpen.value = true
-  // small delay to ensure modal rendered, then wire up checkbox sync
   setTimeout(() => {
     const a = document.getElementById('cookie-analytics') as HTMLInputElement | null
     const m = document.getElementById('cookie-marketing') as HTMLInputElement | null

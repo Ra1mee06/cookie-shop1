@@ -27,7 +27,6 @@ const createInvite = async () => {
     return
   }
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   if (!userId) {
     createError.value = 'Ошибка: userId не найден в localStorage. Пожалуйста, войдите в систему заново.'
@@ -44,7 +43,6 @@ const createInvite = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Обрабатываем разные форматы ответа
     const data = response.data
     if (data?.invite?.code) {
       code.value = data.invite.code
@@ -60,7 +58,6 @@ const createInvite = async () => {
       createSuccess.value = 'Инвайт-код успешно создан'
     }
     
-    // Перезагружаем список после создания
     await load()
   } catch (e) {
     console.error('Ошибка создания инвайт-кода:', e)
@@ -75,7 +72,6 @@ const createInvite = async () => {
 const load = async () => {
   loading.value = true
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   console.log('Загрузка инвайт-кодов. userId:', userId)
   
@@ -90,7 +86,6 @@ const load = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Проверяем разные форматы ответа
     let data = response.data
     if (data && typeof data === 'object' && !Array.isArray(data)) {
       if (data.data && Array.isArray(data.data)) {
@@ -130,7 +125,6 @@ const copyCode = async () => {
     await navigator.clipboard.writeText(code.value)
     alert('Код скопирован в буфер обмена!')
   } catch (e) {
-    // Fallback для старых браузеров
     const textArea = document.createElement('textarea')
     textArea.value = code.value
     document.body.appendChild(textArea)

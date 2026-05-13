@@ -1,0 +1,18 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "PostgreSQL (cookie_shop_aux)",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "cookie_shop_aux",
+      "Username": "postgres",
+      "SSLMode": "prefer",
+      "ConnectionParameters": {
+        "sslmode": "prefer",
+        "connect_timeout": 20,
+        "passfile": "/var/lib/pgadmin/pgpass"
+      }
+    }
+  }
+}

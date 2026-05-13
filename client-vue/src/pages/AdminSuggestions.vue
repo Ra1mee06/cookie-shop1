@@ -8,7 +8,6 @@ const suggestions = ref([])
 const loading = ref(false)
 const error = ref('')
 
-// Filters & pagination
 const search = ref('')
 const page = ref(1)
 const pageSize = ref(10)
@@ -50,7 +49,6 @@ const load = async () => {
   loading.value = true
   error.value = ''
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   console.log('Загрузка предложений. userId:', userId)
   
@@ -66,7 +64,6 @@ const load = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Проверяем разные форматы ответа
     let data = response.data
     if (data && typeof data === 'object' && !Array.isArray(data)) {
       if (data.data && Array.isArray(data.data)) {
@@ -128,7 +125,7 @@ onMounted(load)
       </div>
     </div>
 
-    <!-- Filters -->
+    
     <div class="mb-6">
       <div class="flex gap-4 items-end">
         <div class="flex-1">
@@ -143,14 +140,14 @@ onMounted(load)
       </div>
     </div>
 
-    <!-- Statistics -->
+    
     <div class="mb-6 p-4 bg-gradient-to-br from-cookie-50 to-beige-50 rounded-xl border-2 border-cookie-200">
       <div class="text-sm font-semibold text-brown-700">
         Всего предложений: <span class="text-2xl font-extrabold text-brown-800">{{ filtered.length }}</span>
       </div>
     </div>
 
-    <!-- Suggestions List -->
+    
     <div v-if="loading" class="text-center py-16">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-cookie-600 border-t-transparent"></div>
       <p class="text-brown-600 mt-4 font-medium">Загрузка предложений...</p>
@@ -243,7 +240,7 @@ onMounted(load)
       </div>
     </div>
 
-    <!-- Pagination -->
+    
     <div v-if="totalPages > 1" class="mt-6 flex justify-center items-center gap-3 p-4 bg-white rounded-xl border-2 border-beige-200">
       <button
         @click="page = Math.max(1, page - 1)"

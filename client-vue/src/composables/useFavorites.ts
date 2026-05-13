@@ -169,12 +169,9 @@ export function useFavorites() {
               favorites.value = [...favorites.value, favoriteItem];
             }
           } else {
-            // Если в ответе нет product, загружаем список заново
-            // Используем force=false чтобы не перезаписать данные пустым массивом при ошибке
             await fetchFavorites(false);
           }
         } else {
-          // Если ответ не содержит id, откатываем состояние
           item.isFavorite = false;
           throw new Error("Не удалось получить ID избранного элемента от сервера");
         }
@@ -222,7 +219,6 @@ export function useFavorites() {
     favorites.value = filtered.map(convertLocalToFavoriteItem);
   };
 
-  // Синхронизация избранного
   const syncLocalFavoritesToServer = async (): Promise<void> => {
     if (!isAuthenticated()) {
       return;

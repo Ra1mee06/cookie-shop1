@@ -22,7 +22,6 @@ const load = async () => {
   loading.value = true
   error.value = ''
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   console.log('Загрузка промокодов. userId:', userId)
   
@@ -38,7 +37,6 @@ const load = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Проверяем разные форматы ответа
     let data = response.data
     if (data && typeof data === 'object' && !Array.isArray(data)) {
       if (data.data && Array.isArray(data.data)) {
@@ -71,14 +69,12 @@ const createCode = async () => {
   errors.value = {}
   createMessage.value = ''
   
-  // Проверяем наличие userId
   const userId = localStorage.getItem('userId')
   if (!userId) {
     errors.value.general = 'Ошибка: userId не найден в localStorage. Пожалуйста, войдите в систему заново.'
     return
   }
   
-  // Validation
   if (!form.value.code.trim()) {
     errors.value.code = 'Код обязателен'
   }
@@ -113,25 +109,20 @@ const createCode = async () => {
       type: form.value.type
     }
     
-    // Добавляем value только если тип не BUY2GET1
     if (form.value.type !== 'BUY2GET1' && form.value.value != null && form.value.value !== '') {
       payload.value = Number(form.value.value)
     }
     
-    // Добавляем maxUses если указано
     if (form.value.maxUses != null && form.value.maxUses > 0) {
       payload.maxUses = Number(form.value.maxUses)
     }
     
-    // Добавляем expiresAt если указано
     if (form.value.expiresAt) {
       const date = new Date(form.value.expiresAt)
-      // Устанавливаем время на конец дня
       date.setHours(23, 59, 59, 999)
       payload.expiresAt = date.toISOString()
     }
     
-    // Добавляем productId если тип PRODUCT_PERCENT
     if (form.value.type === 'PRODUCT_PERCENT' && form.value.productId) {
       payload.productId = Number(form.value.productId)
     }
@@ -142,11 +133,9 @@ const createCode = async () => {
     console.log('Ответ от сервера:', response)
     console.log('response.data:', response.data)
     
-    // Очищаем форму после успешного создания
     form.value = { code: '', type: 'ORDER_PERCENT', value: 10, maxUses: null, expiresAt: '', productId: null }
     errors.value = {}
     
-    // Перезагружаем список
     await load()
     
     createMessage.value = 'Промокод успешно создан'

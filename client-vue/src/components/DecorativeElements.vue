@@ -1,6 +1,6 @@
 <template>
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <!-- Плавающие печеньки -->
+    
     <div 
       v-for="(cookie, index) in cookies" 
       :key="index"
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <!-- Облака -->
+    
     <div 
       v-for="(cloud, index) in clouds" 
       :key="'cloud-' + index"
@@ -34,7 +34,7 @@
       <div class="w-full h-full rounded-full bg-white/10 blur-2xl"></div>
     </div>
 
-    <!-- Плавающие сердечки -->
+    
     <div 
       v-for="(heart, index) in hearts" 
       :key="'heart-' + index"
@@ -61,7 +61,6 @@ const clouds = ref([])
 const hearts = ref([])
 
 const generateElements = () => {
-  // Генерируем плавающие печеньки
   cookies.value = Array.from({ length: 8 }, (_, i) => ({
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -69,7 +68,6 @@ const generateElements = () => {
     duration: 8 + Math.random() * 4
   }))
 
-  // Генерируем облака
   clouds.value = Array.from({ length: 5 }, (_, i) => ({
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -78,7 +76,6 @@ const generateElements = () => {
     size: 100 + Math.random() * 150
   }))
 
-  // Генерируем сердечки
   hearts.value = Array.from({ length: 6 }, (_, i) => ({
     x: Math.random() * 100,
     y: Math.random() * 100,

@@ -76,10 +76,23 @@ const registerSchema = z.object({
   adminInviteCode: z.string().optional()
 });
 
+const emptyToUndefined = (val: unknown) => {
+  if (val === "" || val === null || val === undefined) {
+    return undefined;
+  }
+  return val;
+};
+
 const loginSchema = z
   .object({
-    loginOrEmail: z.string().trim().min(1, "Введите логин или email").optional(),
-    email: z.string().trim().email("Введите корректный email").optional(),
+    loginOrEmail: z.preprocess(
+      (val) => (emptyToUndefined(val) === undefined ? undefined : String(val).trim()),
+      z.string().min(1, "Введите логин или email").optional()
+    ),
+    email: z.preprocess(
+      (val) => (emptyToUndefined(val) === undefined ? undefined : String(val).trim()),
+      z.string().email("Введите корректный email").optional()
+    ),
     password: z.string().min(1, "Введите пароль")
   })
   .refine((data) => Boolean(data.loginOrEmail || data.email), {
@@ -142,8 +155,10 @@ app.use((req, res, next) => {
   res.setHeader("x-correlation-id", correlationId);
   const startedAt = Date.now();
   res.on("finish", () => {
-    // eslint-disable-next-line no-console
-    console.log(`[gateway] ${correlationId} ${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - startedAt}ms)`);
+    logger.info(
+      { correlationId, method: req.method, path: req.originalUrl, statusCode: res.statusCode, ms: Date.now() - startedAt },
+      "[gateway] request"
+    );
   });
   next();
 });
@@ -267,7 +282,7 @@ app.post("/api/auth/login", async (req, res) => {
   const { loginOrEmail, email, password } = parsed.data;
   const login = loginOrEmail ?? email;
   const [rows] = await pool.query(
-    "SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ? LIMIT 1",
+    "SELECT * FROM users WHERE (username = ? OR LOWER(TRIM(email)) = LOWER(TRIM(?))) AND password = ? LIMIT 1",
     [login, login, password]
   );
   const user = (rows as UserRow[])[0];
@@ -442,8 +457,7 @@ app.post("/api/admin/promos", authMiddleware, adminOnly, async (req, res) => {
     if (dbError.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ message: "Промокод с таким кодом уже существует" });
     }
-    // eslint-disable-next-line no-console
-    console.error("Failed to create promo code", dbError);
+    logger.error({ err: dbError }, "Failed to create promo code");
     return res.status(500).json({ message: "Failed to create promo code" });
   }
 });
@@ -480,8 +494,7 @@ app.put("/api/admin/promos/:id", authMiddleware, adminOnly, async (req, res) => 
     if (dbError.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ message: "Промокод с таким кодом уже существует" });
     }
-    // eslint-disable-next-line no-console
-    console.error("Failed to update promo code", dbError);
+    logger.error({ err: dbError }, "Failed to update promo code");
     return res.status(500).json({ message: "Failed to update promo code" });
   }
 });

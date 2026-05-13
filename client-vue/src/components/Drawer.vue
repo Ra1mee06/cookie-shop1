@@ -29,7 +29,6 @@ const isAuthenticated = () => {
 }
 
 const openOrderModal = () => {
-  // Проверка авторизации
   if (!isAuthenticated()) {
     showAuthModal.value = true
     return
@@ -48,7 +47,6 @@ const handleOrderSubmit = async (orderFormData) => {
   try {
     isCreating.value = true
     orderError.value = ''
-    // Не закрываем модальное окно сразу, чтобы показать ошибку, если она будет
     
     const orderData = {
       items: cart.value.map(item => ({
@@ -61,7 +59,6 @@ const handleOrderSubmit = async (orderFormData) => {
     }
     
     const response = await ordersApi.create(orderData)
-    // Если заказ успешно создан, закрываем модальное окно и очищаем корзину
     cart.value = []
     orderId.value = response.data.id
     orderError.value = ''
@@ -73,14 +70,10 @@ const handleOrderSubmit = async (orderFormData) => {
       showAuthModal.value = true
       orderError.value = ''
     } else {
-      // Показываем конкретную ошибку от сервера, если она есть
       const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Ошибка при создании заказа. Попробуйте позже.'
-      // Убираем префикс "Error creating order: " если он есть, чтобы сообщение было чище
       const cleanErrorMessage = errorMessage.replace(/^Error creating order:\s*/i, '')
       orderError.value = cleanErrorMessage
-      // Оставляем модальное окно открытым, чтобы пользователь мог увидеть ошибку и исправить промокод
       showOrderModal.value = true
-      // Для ошибок не связанных с промокодом, показываем alert
       if (!cleanErrorMessage.includes('промокод') && !cleanErrorMessage.includes('Промокод')) {
         alert(cleanErrorMessage)
       }
@@ -105,7 +98,7 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
 </script>
 
 <template>
-  <!-- Остальная часть шаблона остается БЕЗ ИЗМЕНЕНИЙ -->
+  
   <div class="fixed right-0 top-0 h-full z-50 flex">
     <div 
       @click="closeDrawer"
@@ -164,7 +157,7 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
     </div>
   </div>
 
-  <!-- Модальное окно авторизации -->
+  
   <transition name="modal-fade">
     <div 
       v-if="showAuthModal" 
@@ -207,7 +200,7 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
     </div>
   </transition>
 
-  <!-- Модальное окно оформления заказа -->
+  
   <OrderModal
     :isOpen="showOrderModal"
     :totalPrice="totalPrice"

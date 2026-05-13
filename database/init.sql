@@ -1,8 +1,6 @@
--- Создание базы данных
 CREATE DATABASE IF NOT EXISTS cookie_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE cookie_shop;
 
--- Создание таблиц
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -106,7 +104,6 @@ CREATE TABLE IF NOT EXISTS admin_invites (
     FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Заполнение начальными данными
 INSERT INTO users (username, email, password, full_name, role) 
 SELECT 'admin', 'admin@cookieshop.com', 'admin123', 'Администратор', 'ADMIN'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin');
@@ -123,7 +120,6 @@ INSERT INTO users (username, email, password, full_name, role)
 SELECT 'user1', 'user1@mail.com', 'user123', 'Иван Иванов', 'USER'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'user1');
 
--- Товары
 UPDATE products SET price = 8.50 WHERE title = 'Бабушкины тайны';
 INSERT INTO products (title, price, image_url, description, ingredients, calories, story) 
 SELECT 'Бабушкины тайны', 8.50, '/cookies/cookie1.png', 'Традиционная печенька с секретным рецептом, передающимся в семье из поколения в поколение. Содержит натуральные специи и мёд.', 'Мука, масло, мёд, специи', '350 ккал/100г', 'Рецепт создан в 1890 году в маленькой деревне на севере Беларуси'

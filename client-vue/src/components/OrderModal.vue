@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Основное модальное окно оформления заказа -->
+    
     <transition name="modal-fade">
       <div 
         v-if="isOpen && !showMapModal" 
@@ -30,12 +30,12 @@
             </div>
 
             <form @submit.prevent="handleSubmit" class="space-y-6">
-              <!-- Сообщение об ошибке -->
+              
               <div v-if="props.error" class="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
                 <p class="text-red-700 font-semibold text-sm">{{ props.error }}</p>
               </div>
               
-              <!-- Получатель (обязательно) -->
+              
               <div>
                 <label class="block text-sm font-semibold text-brown-700 mb-2">
                   Получатель <span class="text-red-500">*</span>
@@ -50,7 +50,7 @@
                 <p v-if="errors.recipient" class="text-red-500 text-sm mt-1">{{ errors.recipient }}</p>
               </div>
 
-              <!-- Адрес (обязательно) -->
+              
               <div>
                 <label class="block text-sm font-semibold text-brown-700 mb-2">
                   Адрес доставки <span class="text-red-500">*</span>
@@ -79,7 +79,7 @@
                 <p v-if="errors.address" class="text-red-500 text-sm mt-1">{{ errors.address }}</p>
               </div>
 
-              <!-- Комментарий (опционально) -->
+              
               <div>
                 <label class="block text-sm font-semibold text-brown-700 mb-2">
                   Комментарий к заказу <span class="text-brown-400 text-xs">(необязательно)</span>
@@ -91,7 +91,7 @@
                 ></textarea>
               </div>
 
-              <!-- Промокод (опционально) -->
+              
               <div>
                 <label class="block text-sm font-semibold text-brown-700 mb-2">
                   Промокод <span class="text-brown-400 text-xs">(необязательно)</span>
@@ -111,11 +111,11 @@
                     Применить
                   </button>
                 </div>
-                <!-- Показываем сообщение о промокоде только если нет ошибки в props.error (чтобы не дублировать) -->
+                
                 <p v-if="promoMessage && !props.error" :class="promoMessage.includes('неверный') || promoMessage.includes('не найден') || promoMessage.includes('истек') || promoMessage.includes('неактивен') ? 'text-red-500' : promoMessage.includes('применен') || promoMessage.includes('будет проверен') ? 'text-green-500' : 'text-gray-500'" class="text-sm mt-1">{{ promoMessage }}</p>
               </div>
 
-              <!-- Способ оплаты -->
+              
               <div>
                 <label class="block text-sm font-semibold text-brown-700 mb-3">
                   Способ оплаты <span class="text-red-500">*</span>
@@ -164,7 +164,7 @@
                 <p v-if="errors.paymentMethod" class="text-red-500 text-sm mt-1">{{ errors.paymentMethod }}</p>
               </div>
 
-              <!-- Чаевые (только для оплаты картой) -->
+              
               <div v-if="showTipOptions">
                 <label class="block text-sm font-semibold text-brown-700 mb-3">
                   Чаевые доставщику <span class="text-brown-400 text-xs">(необязательно)</span>
@@ -190,7 +190,7 @@
                 </p>
               </div>
 
-              <!-- Итого -->
+              
               <div class="border-t-2 border-beige-200 pt-6 bg-gradient-to-br from-cookie-50 to-beige-50 rounded-xl p-6">
                 <div class="space-y-3">
                   <div class="flex justify-between text-brown-700">
@@ -216,7 +216,7 @@
                 </div>
               </div>
 
-              <!-- Кнопки -->
+              
               <div class="flex gap-4 pt-6">
                 <button
                   type="button"
@@ -252,7 +252,7 @@
       </div>
     </transition>
 
-    <!-- Модальное окно карты -->
+    
     <transition name="modal-fade">
       <div 
         v-if="showMapModal" 
@@ -350,12 +350,11 @@ let mapInstance = null
 let mapMarker = null
 let geocoder = null
 
-// Промокоды (в реальном приложении это должно приходить с сервера)
 const promoCodes = {
-  'DISCOUNT10': { type: 'discount', value: 10 }, // 10% скидка
-  'DISCOUNT20': { type: 'discount', value: 20 }, // 20% скидка
-  'BUY2GET1': { type: 'bonus', value: 'buy2get1' }, // 2 печеньки по цене 1
-  'WELCOME': { type: 'discount', value: 15 } // 15% скидка для новых
+  'DISCOUNT10': { type: 'discount', value: 10 },
+  'DISCOUNT20': { type: 'discount', value: 20 },
+  'BUY2GET1': { type: 'bonus', value: 'buy2get1' },
+  'WELCOME': { type: 'discount', value: 15 }
 }
 
 const tipOptions = [
@@ -377,8 +376,6 @@ const calculateTip = computed(() => {
 })
 
 const finalTotal = computed(() => {
-  // Если промокод указан, но еще не проверен, не применяем скидку
-  // Скидка будет рассчитана на сервере после проверки промокода
   if (form.value.promoCode && form.value.promoCode.trim() && discount.value === 0) {
     return props.totalPrice + calculateTip.value
   }
@@ -399,9 +396,6 @@ const applyPromoCode = async () => {
     return
   }
 
-  // Валидация промокода будет проверяться на сервере при оформлении заказа
-  // Здесь просто сбрасываем сообщение, чтобы пользователь мог ввести промокод
-  // и увидеть ошибку при попытке оформить заказ
   promoMessage.value = 'Промокод будет проверен при оформлении заказа'
   discount.value = 0
 }
@@ -418,7 +412,6 @@ const closeMapModal = () => {
 }
 
 const confirmAddress = () => {
-  // Используем выбранный адрес или текст из поискового поля
   const address = selectedAddress.value || mapSearchQuery.value.trim()
   if (address) {
     form.value.address = address
@@ -427,10 +420,7 @@ const confirmAddress = () => {
 }
 
 const initMap = () => {
-  // Проверяем, загружена ли Яндекс.Карты API
   if (typeof ymaps === 'undefined') {
-    // Если API не загружен, загружаем его
-    // Используем более новую версию API без Suggest (который убран)
     const script = document.createElement('script')
     script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey='
     script.async = true
@@ -443,7 +433,6 @@ const initMap = () => {
         }
       } catch (error) {
         console.warn('Ошибка инициализации Яндекс.Карт:', error)
-        // Показываем простое текстовое поле для ввода адреса
         const mapContainer = document.getElementById('map')
         if (mapContainer) {
           mapContainer.innerHTML = '<p class="p-4 text-gray-600">Карта недоступна. Пожалуйста, введите адрес вручную.</p>'
@@ -478,27 +467,22 @@ const createMap = () => {
   if (!mapContainer) return
 
   try {
-    // Удаляем старую карту, если есть
     if (mapInstance) {
       mapInstance.destroy()
       mapInstance = null
     }
 
-    // Проверяем наличие ymaps
     if (typeof ymaps === 'undefined') {
       throw new Error('Яндекс.Карты API не загружен')
     }
 
-    // Создаем карту с центром в Минске
     mapInstance = new ymaps.Map('map', {
-      center: [53.9045, 27.5615], // Минск - центр города
+      center: [53.9045, 27.5615],
       zoom: 12
     })
 
-    // Создаем геокодер для поиска
     geocoder = ymaps.geocode
 
-    // Добавляем маркер
     mapMarker = new ymaps.Placemark(
       mapInstance.getCenter(),
       { balloonContent: 'Выберите адрес' },
@@ -506,7 +490,6 @@ const createMap = () => {
     )
     mapInstance.geoObjects.add(mapMarker)
 
-    // При клике на карту перемещаем маркер
     try {
       mapInstance.events.add('click', (e) => {
         try {
@@ -516,29 +499,23 @@ const createMap = () => {
             reverseGeocode(coords)
           }
         } catch (error) {
-          // Игнорируем ошибки клика
         }
       })
 
-      // При перемещении маркера обновляем адрес
       if (mapMarker) {
         mapMarker.events.add('dragend', () => {
           try {
             const coords = mapMarker.geometry.getCoordinates()
             reverseGeocode(coords)
           } catch (error) {
-            // Игнорируем ошибки перемещения маркера
           }
         })
       }
     } catch (error) {
-      // Игнорируем ошибки при добавлении обработчиков событий
     }
   } catch (error) {
-    // Обработка ошибок карты
     console.warn('Ошибка создания карты:', error)
     
-    // Показываем информационное сообщение
     mapContainer.innerHTML = `
       <div class="p-4 text-center">
         <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -564,21 +541,16 @@ const reverseGeocode = (coords) => {
         try {
           mapMarker.properties.set('balloonContent', selectedAddress.value)
         } catch (e) {
-          // Игнорируем ошибки при установке свойств маркера
         }
       } else {
-        // Если нет результата, используем координаты
         selectedAddress.value = `${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}`
       }
     }).catch((error) => {
-      // При ошибке геокодирования используем координаты
       if (mapMarker && coords) {
         selectedAddress.value = `${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}`
       }
-      // Не выводим ошибки в консоль для снижения спама
     })
   } catch (error) {
-    // При любой ошибке используем координаты
     if (coords) {
       selectedAddress.value = `${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}`
     }
@@ -588,7 +560,6 @@ const reverseGeocode = (coords) => {
 const searchAddress = async () => {
   if (!mapSearchQuery.value.trim()) return
 
-  // Если карта недоступна, просто устанавливаем адрес из поискового запроса
   if (!mapInstance) {
     selectedAddress.value = mapSearchQuery.value
     return
@@ -599,7 +570,6 @@ const searchAddress = async () => {
   }
 
   if (!geocoder || !mapInstance || !mapMarker) {
-    // Если геокодер недоступен, просто используем текст как адрес
     selectedAddress.value = mapSearchQuery.value
     return
   }
@@ -615,21 +585,17 @@ const searchAddress = async () => {
         try {
           mapMarker.properties.set('balloonContent', selectedAddress.value)
         } catch (e) {
-          // Игнорируем ошибки
         }
       } else {
-        // Если геокодирование не дало результата, используем введенный текст
         selectedAddress.value = mapSearchQuery.value
       }
     }).catch((error) => {
-      // При ошибке просто используем введенный текст как адрес
       selectedAddress.value = mapSearchQuery.value
       if (error && error.message !== 'scriptError') {
         console.warn('Ошибка поиска адреса:', error)
       }
     })
   } catch (error) {
-    // При любой ошибке используем введенный текст
     selectedAddress.value = mapSearchQuery.value
     if (error && error.message !== 'scriptError') {
       console.warn('Ошибка при поиске адреса:', error)
@@ -659,9 +625,7 @@ const resetForm = () => {
 }
 
 const handleSubmit = async () => {
-  // Валидация
   errors.value = {}
-  // Очищаем promoMessage при отправке формы, ошибка будет показана через props.error
   promoMessage.value = ''
   
   if (!form.value.recipient.trim()) {
@@ -674,11 +638,8 @@ const handleSubmit = async () => {
     errors.value.paymentMethod = 'Выберите способ оплаты'
   }
 
-  // Если указан промокод, очищаем его перед отправкой, чтобы сервер проверил его
-  // (сервер проверит промокод и вернет ошибку, если он неверный)
   if (form.value.promoCode && form.value.promoCode.trim()) {
-    // Промокод будет проверен на сервере
-    discount.value = 0 // Сбрасываем локальную скидку, пусть сервер рассчитывает
+    discount.value = 0
   }
 
   if (Object.keys(errors.value).length > 0) {
@@ -695,14 +656,13 @@ const handleSubmit = async () => {
       promoCode: form.value.promoCode?.trim() ? form.value.promoCode.trim() : undefined,
       paymentMethod: form.value.paymentMethod,
       tip: showTipOptions.value ? calculateTip.value : 0,
-      discount: 0, // Не передаем discount, пусть сервер рассчитывает на основе промокода
+      discount: 0,
       finalTotal: finalTotal.value
     }
 
     emit('submit', orderData)
   } catch (error) {
     console.error('Ошибка при оформлении заказа:', error)
-    // Ошибка будет обработана в Drawer.vue и передана через props.error
   } finally {
     isSubmitting.value = false
   }
@@ -711,21 +671,17 @@ const handleSubmit = async () => {
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     resetForm()
-    // Сбрасываем ошибку при открытии модального окна
     errors.value = {}
   }
 })
 
 watch(() => props.error, (newError) => {
   if (newError && (newError.includes('промокод') || newError.includes('Промокод'))) {
-    // Очищаем promoMessage, чтобы не дублировать сообщение об ошибке
-    // Ошибка будет показана только в блоке сверху через props.error
     promoMessage.value = ''
   }
 })
 
 onMounted(() => {
-  // Загружаем Яндекс.Карты API если еще не загружен
   if (typeof ymaps === 'undefined') {
     const script = document.createElement('script')
     script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey='

@@ -1,3 +1,5 @@
+name: cookie-shop
+
 services:
   mysql:
     image: mysql:8.0
@@ -132,7 +134,7 @@ services:
     environment:
       POSTGRES_DB: cookie_shop_aux
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: admin123
     ports:
       - "5432:5432"
     volumes:
@@ -145,18 +147,32 @@ services:
     restart: unless-stopped
 
   pgadmin:
-    image: dpage/pgadmin4:8.7
+    image: dpage/pgadmin4:8.14
     container_name: cookie-shop-pgadmin
+    shm_size: "256mb"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@cookie-shop.local
+      PGADMIN_DEFAULT_EMAIL: filipovichdaniil0@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DISABLE_POSTFIX: "true"
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+      PGPASS_FILE: /var/lib/pgadmin/pgpass
     ports:
       - "5050:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./docker/pgadmin/pgpass:/var/lib/pgadmin/pgpass:ro
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:80/misc/ping >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
     restart: unless-stopped
 
 volumes:

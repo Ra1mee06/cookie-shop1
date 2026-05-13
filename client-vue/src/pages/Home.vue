@@ -23,7 +23,6 @@ const openProduct = (product) => {
 
 const { cart, addToCart, removeFromCart } = inject('cart')
 
-// Используем глобальное состояние избранного через inject
 const favoritesState = inject('favorites')
 if (!favoritesState) {
   throw new Error('Favorites state not provided. Make sure useFavorites is called in GlobalComponent.')
@@ -44,7 +43,6 @@ const {
   resetForm 
 } = useSuggestions()
 
-// Модальное окно для авторизации при добавлении в избранное
 const showFavoriteAuthModal = ref(false)
 
 const goToProfile = () => {
@@ -102,29 +100,22 @@ const addToFavorite = async (item) => {
   try {
     const result = await toggleFavorite(item);
     
-    // Проверяем, требуется ли авторизация
     if (result && 'needsAuth' in result && result.needsAuth) {
       showFavoriteAuthModal.value = true;
       return;
     }
     
-    // После успешного обновления обновляем статусы, чтобы убедиться в синхронизации
-    // Это гарантирует, что favoriteId правильно установлен для всех товаров
     updateItemsFavoritesStatus();
   } catch (err) {
     console.error("Ошибка при добавлении в избранное:", err);
-    // При ошибке синхронизируем состояние с сервером, чтобы откатить изменения
-    // Используем force=false чтобы не потерять существующие данные при ошибке загрузки
     await fetchFavorites(false);
     updateItemsFavoritesStatus();
   }
 };
 
 const updateItemsFavoritesStatus = () => {
-  // Используем глобальное состояние favorites напрямую, без дополнительного запроса к серверу
   const favoritesList = favorites.value || [];
   
-  // Создаем Map для быстрого поиска избранных товаров по product.id
   const favoritesMap = new Map();
   favoritesList.forEach(fav => {
     if (fav.product && fav.product.id) {
@@ -146,7 +137,6 @@ const fetchItems = async () => {
   try {
     const params = {};
     
-    // Преобразуем параметры сортировки для backend API
     if (filters.sortBy === 'price') {
       params.sortBy = 'price';
       params.sortOrder = 'asc';
@@ -163,7 +153,6 @@ const fetchItems = async () => {
 
     const response = await productsApi.getAll(params);
     
-    // Сначала загружаем товары без статусов избранного
     const loadedItems = response.data.map(obj => ({
       ...obj,
       isFavorite: false,
@@ -171,8 +160,6 @@ const fetchItems = async () => {
       isAdded: false
     }));
     
-    // Сразу обновляем статусы избранного на основе уже загруженного favorites.value
-    // Создаем Map для быстрого поиска избранных товаров по product.id
     const favoritesList = favorites.value || [];
     const favoritesMap = new Map();
     favoritesList.forEach(fav => {
@@ -181,7 +168,6 @@ const fetchItems = async () => {
       }
     });
     
-    // Применяем статусы избранного к загруженным товарам
     items.value = loadedItems.map(item => {
       const favorite = favoritesMap.get(item.id);
       return {
@@ -197,7 +183,6 @@ const fetchItems = async () => {
 };
 
 onMounted(async () => {
-  // Восстанавливаем userId если пользователь залогинен
   const savedUser = localStorage.getItem('user')
   if (savedUser) {
     try {
@@ -210,19 +195,14 @@ onMounted(async () => {
     }
   }
 
-  // ВАЖНО: Сначала загружаем избранное, чтобы статусы товаров были правильными
-  // Это предотвращает race condition, когда товары загружаются раньше избранного
-  // Используем force=true для гарантии актуальных данных при первой загрузке
   try {
     await fetchFavorites(true)
   } catch (err) {
     console.error('Ошибка при загрузке избранного на странице Home:', err)
   }
 
-  // Теперь загружаем товары - они автоматически получат правильные статусы избранного
   await fetchItems()
   
-  // Дополнительно обновляем статусы на случай, если избранное изменилось во время загрузки
   updateItemsFavoritesStatus()
 })
 
@@ -233,9 +213,7 @@ watch(cart, () => {
   }))
 }, { deep: true })
 
-// Следим за изменениями в избранном и обновляем статусы товаров
 watch(favorites, () => {
-  // Обновляем статусы товаров только если товары уже загружены
   if (items.value.length > 0) {
     updateItemsFavoritesStatus()
   }
@@ -246,17 +224,17 @@ watch(filters, fetchItems, { deep: true })
 
 <template>
   <div class="relative space-y-8">
-    <!-- Декоративные элементы -->
+    
     <DecorativeElements />
     
-    <!-- News Feed / Лента новостей и спецпредложений -->
+    
     <div class="relative z-10">
       <NewsFeed />
     </div>
     
-    <!-- Hero Section -->
+    
     <div class="relative z-10 text-center mb-12 py-12 md:py-16 bg-gradient-to-r from-cookie-50 via-beige-50 to-brown-50 rounded-2xl border-2 border-beige-200 overflow-hidden">
-      <!-- Декоративные элементы внутри hero -->
+      
       <div class="absolute top-0 left-0 w-32 h-32 bg-cookie-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
       <div class="absolute bottom-0 right-0 w-40 h-40 bg-brown-200/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
       
@@ -289,7 +267,7 @@ watch(filters, fetchItems, { deep: true })
       </div>
     </div>
 
-    <!-- Filters Section -->
+    
     <div id="products-section" class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div class="flex items-center gap-4">
         <div class="hidden md:block w-16 h-1 bg-gradient-to-r from-cookie-500 to-brown-600 rounded-full"></div>
@@ -350,7 +328,7 @@ watch(filters, fetchItems, { deep: true })
     </button>
   </div>
 
-  <!-- Модальное окно предложения товара -->
+  
   <div class="relative z-50">
   <transition name="modal-fade">
     <div 
@@ -451,7 +429,7 @@ watch(filters, fetchItems, { deep: true })
     </div>
   </transition>
 
-  <!-- Модальное окно авторизации для предложений -->
+  
   <transition name="modal-fade">
     <div 
       v-if="showAuthModal" 
@@ -495,7 +473,7 @@ watch(filters, fetchItems, { deep: true })
   </transition>
   </div>
 
-  <!-- Модальное окно авторизации для избранного -->
+  
   <transition name="modal-fade">
     <div 
       v-if="showFavoriteAuthModal" 

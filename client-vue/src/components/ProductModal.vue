@@ -48,9 +48,9 @@ const details = computed(() => {
       </button>
       
       <div class="grid md:grid-cols-2 gap-8">
-        <!-- Левая часть - изображение -->
+        
         <div class="relative flex items-center justify-center bg-gradient-to-br from-white via-cookie-50/40 to-beige-50/60 rounded-2xl p-8 overflow-hidden">
-          <!-- Декоративные элементы -->
+          
           <div class="absolute top-0 right-0 w-40 h-40 bg-cookie-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div class="absolute bottom-0 left-0 w-48 h-48 bg-brown-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
           
@@ -61,9 +61,9 @@ const details = computed(() => {
           >
         </div>
         
-        <!-- Правая часть - информация -->
+        
         <div class="space-y-6">
-          <!-- Заголовок и цена -->
+          
           <div class="pb-4 border-b-2 border-beige-200">
             <h2 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-cookie-600 via-cookie-500 to-brown-700 bg-clip-text text-transparent mb-4 leading-tight">
               {{ product.title }}
@@ -77,9 +77,9 @@ const details = computed(() => {
             </div>
           </div>
           
-          <!-- Информационные блоки -->
+          
           <div class="space-y-5 pt-2">
-            <!-- Описание -->
+            
             <div class="bg-gradient-to-br from-cookie-50 to-cookie-100/50 rounded-2xl p-6 border-2 border-cookie-200/50 shadow-lg">
               <h3 class="text-xl font-bold text-brown-900 mb-3 flex items-center gap-3">
                 <div class="p-2 bg-cookie-500 rounded-lg">
@@ -92,7 +92,7 @@ const details = computed(() => {
               <p class="text-brown-800 leading-relaxed text-base font-medium">{{ details.description }}</p>
             </div>
             
-            <!-- История -->
+            
             <div class="bg-gradient-to-br from-beige-50 to-beige-100/50 rounded-2xl p-6 border-2 border-beige-200/50 shadow-lg">
               <h3 class="text-xl font-bold text-brown-900 mb-3 flex items-center gap-3">
                 <div class="p-2 bg-brown-500 rounded-lg">
@@ -105,7 +105,7 @@ const details = computed(() => {
               <p class="text-brown-800 leading-relaxed text-base font-medium">{{ details.story }}</p>
             </div>
             
-            <!-- Состав и пищевая ценность -->
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="bg-white border-2 border-cookie-200 rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow duration-300">
                 <h3 class="text-lg font-bold text-brown-900 mb-3 flex items-center gap-2">

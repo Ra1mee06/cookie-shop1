@@ -7,7 +7,6 @@ import { useFavorites } from '../composables/useFavorites';
 const router = useRouter();
 const { auth: authApi, orders: ordersApi, suggestions: suggestionsApi } = useApi();
 
-// Получаем функции для работы с избранным
 const favoritesState = inject('favorites');
 let syncLocalFavoritesToServer = null;
 let clearLocalOnLogout = null;
@@ -16,7 +15,6 @@ if (favoritesState) {
   syncLocalFavoritesToServer = favoritesState.syncLocalFavoritesToServer;
   clearLocalOnLogout = favoritesState.clearLocalOnLogout;
 } else {
-  // Если inject не работает, используем напрямую useFavorites
   const { syncLocalFavoritesToServer: syncFn, clearLocalOnLogout: clearFn } = useFavorites();
   syncLocalFavoritesToServer = syncFn;
   clearLocalOnLogout = clearFn;
@@ -54,7 +52,7 @@ const userOrders = ref([]);
 const userSuggestions = ref([]);
 const isLoadingOrders = ref(false);
 const isLoadingSuggestions = ref(false);
-const activeTab = ref('orders'); // 'orders' or 'suggestions'
+const activeTab = ref('orders');
 
 const showEditForm = ref(false);
 const isSaving = ref(false);
@@ -114,7 +112,6 @@ const navigateToAdmin = (path) => {
   router.push(path).catch(err => {
     console.error('Navigation error:', err);
     if (err.name !== 'NavigationDuplicated') {
-      // Если это не дублирование навигации, попробуем еще раз
       setTimeout(() => {
         router.push(path);
       }, 100);
@@ -427,7 +424,6 @@ const handleRegister = async () => {
     return;
   }
 
-  // Валидация логина: только буквы, цифры и подчеркивания, минимум 3 символа
   const usernamePattern = /^[a-zA-Z0-9_]{3,20}$/;
   if (!usernamePattern.test(registerUsername.value.trim())) {
     authErrors.value.registerUsername = 'Логин должен содержать от 3 до 20 символов (только буквы, цифры и подчеркивание)';
@@ -461,7 +457,6 @@ const handleRegister = async () => {
     isAuthenticated.value = true;
     localStorage.setItem('authToken', data.token || 'stub-token');
     localStorage.setItem('user', JSON.stringify(userData.value));
-    // Сохраняем userId для работы с favorites
     if (data.user?.id) {
       localStorage.setItem('userId', data.user.id.toString());
     }
@@ -472,7 +467,6 @@ const handleRegister = async () => {
     registerPassword.value = '';
     adminInviteCode.value = '';
     
-    // Синхронизируем локальное избранное с сервером после регистрации
     if (syncLocalFavoritesToServer) {
       try {
         await syncLocalFavoritesToServer();
@@ -481,7 +475,6 @@ const handleRegister = async () => {
       }
     }
     
-    // Загружаем историю заказов и предложений
     await Promise.all([loadUserOrders(), loadUserSuggestions()]);
     window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { type: 'register', userId: data.user?.id } }));
     
@@ -516,8 +509,10 @@ const handleLogin = async () => {
   isLoading.value = true;
 
   try {
+    const trimmed = loginOrEmail.value.trim();
+    const loginIdentifier = trimmed.includes('@') ? trimmed.toLowerCase() : trimmed;
     const response = await authApi.login({
-      loginOrEmail: loginOrEmail.value.trim(),
+      loginOrEmail: loginIdentifier,
       password: loginPassword.value
     });
 
@@ -532,7 +527,6 @@ const handleLogin = async () => {
     isAuthenticated.value = true;
     localStorage.setItem('authToken', data.token || 'stub-token');
     localStorage.setItem('user', JSON.stringify(userData.value));
-    // Сохраняем userId для работы с favorites
     if (data.user?.id) {
       localStorage.setItem('userId', data.user.id.toString());
     }
@@ -540,7 +534,6 @@ const handleLogin = async () => {
     loginOrEmail.value = '';
     loginPassword.value = '';
     
-    // Синхронизируем локальное избранное с сервером после входа
     if (syncLocalFavoritesToServer) {
       try {
         await syncLocalFavoritesToServer();
@@ -549,7 +542,6 @@ const handleLogin = async () => {
       }
     }
     
-    // Загружаем историю заказов и предложений
     await Promise.all([loadUserOrders(), loadUserSuggestions()]);
     window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { type: 'login', userId: data.user?.id } }));
     
@@ -565,7 +557,6 @@ const handleLogin = async () => {
 };
 
 const handleLogout = () => {
-  // Очищаем локальное избранное при выходе (серверное остается)
   if (clearLocalOnLogout) {
     clearLocalOnLogout();
   }
@@ -591,15 +582,13 @@ const checkAuth = async () => {
   if (token && savedUser) {
     try {
       const parsedUser = JSON.parse(savedUser);
-      if (parsedUser?.email) {
+      if (parsedUser?.id != null || parsedUser?.email) {
         userData.value = parsedUser;
         isAuthenticated.value = true;
-        // Восстанавливаем userId если есть
         if (parsedUser?.id) {
           localStorage.setItem('userId', parsedUser.id.toString());
         }
         
-        // Синхронизируем локальное избранное с сервером при восстановлении сессии
         if (syncLocalFavoritesToServer) {
           try {
             await syncLocalFavoritesToServer();
@@ -608,7 +597,6 @@ const checkAuth = async () => {
           }
         }
         
-        // Загружаем историю заказов и предложений
         await Promise.all([loadUserOrders(), loadUserSuggestions()]);
       }
     } catch (e) {
@@ -816,7 +804,7 @@ onMounted(checkAuth);
         </button>
       </div>
       
-      <!-- Табы для истории заказов и предложений -->
+      
       <div class="mb-6 flex justify-center gap-2 border-b border-gray-200">
         <button
           @click="activeTab = 'orders'"
@@ -842,7 +830,7 @@ onMounted(checkAuth);
         </button>
       </div>
       
-      <!-- История заказов -->
+      
       <div v-if="activeTab === 'orders'" class="text-left mb-6">
         <div v-if="isLoadingOrders" class="text-center py-8">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-cookie-600"></div>
@@ -880,7 +868,7 @@ onMounted(checkAuth);
               </span>
             </div>
             
-            <!-- Информация о доставке и получателе -->
+            
             <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div v-if="order.recipient" class="bg-blue-50 rounded-lg p-3 border border-blue-100">
                 <p class="text-xs font-semibold text-blue-600 uppercase mb-1 flex items-center gap-1">
@@ -921,7 +909,7 @@ onMounted(checkAuth);
               </div>
             </div>
 
-            <!-- Комментарий к заказу -->
+            
             <div v-if="order.comment" class="mb-4 bg-gray-50 rounded-lg p-3 border border-gray-200">
               <p class="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -932,7 +920,7 @@ onMounted(checkAuth);
               <p class="text-sm text-gray-700 whitespace-pre-wrap">{{ order.comment }}</p>
             </div>
 
-            <!-- Товары -->
+            
             <div class="mb-4">
               <p class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <svg class="h-4 w-4 text-cookie-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -960,7 +948,7 @@ onMounted(checkAuth);
               </div>
             </div>
             
-            <!-- Итоговая информация -->
+            
             <div class="bg-cookie-50 rounded-lg p-4 border-2 border-cookie-100 space-y-2">
               <div v-if="order.discount && parseFloat(order.discount) > 0" class="flex justify-between items-center text-sm">
                 <span class="text-gray-700 flex items-center gap-2">
@@ -994,7 +982,7 @@ onMounted(checkAuth);
         </div>
       </div>
       
-      <!-- История предложений -->
+      
       <div v-if="activeTab === 'suggestions'" class="text-left mb-6">
         <div v-if="isLoadingSuggestions" class="text-center py-8">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-cookie-600"></div>
@@ -1058,7 +1046,7 @@ onMounted(checkAuth);
       </button>
     </div>
     
-    <!-- Модальное окно редактирования профиля -->
+    
     <div 
       v-if="showEditForm" 
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -1085,7 +1073,7 @@ onMounted(checkAuth);
             {{ editSuccess }}
           </div>
           
-          <!-- Основная информация -->
+          
           <div>
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Основная информация</h4>
             <div class="space-y-4">
@@ -1133,7 +1121,7 @@ onMounted(checkAuth);
             </div>
           </div>
           
-          <!-- Смена пароля -->
+          
           <div class="border-t border-gray-200 pt-6">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Смена пароля</h4>
             <div class="space-y-4">
@@ -1184,7 +1172,7 @@ onMounted(checkAuth);
       </div>
     </div>
     
-    <!-- Модальное окно выбора аватара -->
+    
     <div 
       v-if="showAvatarModal" 
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -1204,7 +1192,7 @@ onMounted(checkAuth);
         </div>
         
         <div class="p-6 space-y-6">
-          <!-- Предпросмотр -->
+          
           <div class="text-center">
             <div class="inline-block">
               <div 
@@ -1228,7 +1216,7 @@ onMounted(checkAuth);
             </div>
           </div>
           
-          <!-- Загрузка своего изображения -->
+          
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">Загрузить своё изображение</label>
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-cookie-500 transition-colors">
@@ -1252,7 +1240,7 @@ onMounted(checkAuth);
             </div>
           </div>
           
-          <!-- Выбор из печенек -->
+          
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">Или выберите печеньку</label>
             <div class="grid grid-cols-4 gap-4">
@@ -1272,7 +1260,7 @@ onMounted(checkAuth);
             </div>
           </div>
           
-          <!-- Кнопки действий -->
+          
           <div class="flex gap-4">
             <button
               @click="closeAvatarModal"
@@ -1293,7 +1281,7 @@ onMounted(checkAuth);
       </div>
     </div>
     
-    <!-- Модальное окно меню администратора -->
+    
     <div 
       v-if="showAdminModal" 
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -1314,7 +1302,7 @@ onMounted(checkAuth);
         
         <div class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Пользователи -->
+            
             <button
               @click="navigateToAdmin('/admin/users')"
               class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg group text-left"
@@ -1330,7 +1318,7 @@ onMounted(checkAuth);
               <p class="text-sm text-gray-600">Управление всеми зарегистрированными пользователями. Редактирование данных и удаление аккаунтов.</p>
             </button>
 
-            <!-- Заказы -->
+            
             <button
               @click="navigateToAdmin('/admin/orders')"
               class="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg group text-left"
@@ -1346,7 +1334,7 @@ onMounted(checkAuth);
               <p class="text-sm text-gray-600">Просмотр всех заказов и их содержимого. Управление статусами заказов.</p>
             </button>
 
-            <!-- Предложения -->
+            
             <button
               @click="navigateToAdmin('/admin/suggestions')"
               class="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg group text-left"
@@ -1362,7 +1350,7 @@ onMounted(checkAuth);
               <p class="text-sm text-gray-600">История всех предложений от пользователей. Просмотр и управление предложениями.</p>
             </button>
 
-            <!-- Инвайт-коды -->
+            
             <button
               @click="navigateToAdmin('/admin/invites')"
               class="p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:border-orange-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg group text-left"
@@ -1379,7 +1367,7 @@ onMounted(checkAuth);
             </button>
           </div>
 
-          <!-- Дополнительные ссылки -->
+          
           <div class="mt-6 pt-6 border-t border-gray-200">
             <button
               @click="navigateToAdmin('/admin/promocodes')"

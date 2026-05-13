@@ -34,7 +34,7 @@ const handleProductClick = () => {
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <!-- Badge для избранного/удаления -->
+    
     <div v-if="onClickRemove" class="absolute top-4 right-4 z-30">
       <button
         @click.stop="onClickRemove"
@@ -57,7 +57,7 @@ const handleProductClick = () => {
       />
     </button>
 
-    <!-- Изображение товара - крупное, как в Crumbl -->
+    
     <div 
       class="relative overflow-hidden bg-white h-80 flex-shrink-0 flex items-center justify-center transition-all duration-500" 
       @click="handleProductClick"
@@ -70,14 +70,14 @@ const handleProductClick = () => {
       />
     </div>
 
-    <!-- Информационный блок в стиле Crumbl - коричневый фон с белым текстом -->
+    
     <div class="bg-gradient-to-br from-brown-700 via-brown-600 to-brown-800 p-6 md:p-8 text-white flex-1 flex flex-col">
-      <!-- Название продукта -->
+      
       <h3 class="font-black text-2xl md:text-2xl lg:text-3xl mb-4 leading-tight flex-grow">
         {{ title }}
       </h3>
 
-      <!-- Цена -->
+      
       <div class="mb-5">
         <div class="flex items-baseline gap-2">
           <span class="text-white/80 text-sm md:text-base font-semibold">Цена:</span>
@@ -86,7 +86,7 @@ const handleProductClick = () => {
         </div>
       </div>
 
-      <!-- Кнопки действий -->
+      
       <div class="flex flex-col sm:flex-row gap-3 mt-auto">
         <button
           @click.stop="handleProductClick"

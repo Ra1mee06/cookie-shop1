@@ -12,7 +12,6 @@ const handleClose = () => {
   emit('close')
 }
 
-// Детальная информация для каждой новости
 const newsDetails = computed(() => {
   if (!props.newsItem) return null
   
@@ -66,7 +65,7 @@ const newsDetails = computed(() => {
           class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-beige-200 relative"
           @click.stop
         >
-          <!-- Кнопка закрытия -->
+          
           <button 
             @click="handleClose"
             class="absolute top-4 right-4 p-2 rounded-full hover:bg-cookie-100 transition-all duration-300 transform hover:scale-110 active:scale-95 z-10"
@@ -76,12 +75,12 @@ const newsDetails = computed(() => {
             </svg>
           </button>
 
-          <!-- Заголовок с градиентом -->
+          
           <div 
             class="relative h-64 bg-gradient-to-br overflow-hidden"
             :class="newsItem.gradient"
           >
-            <!-- Фоновое изображение -->
+            
             <div class="absolute inset-0 opacity-20">
               <img 
                 :src="newsItem.image" 
@@ -90,7 +89,7 @@ const newsDetails = computed(() => {
               />
             </div>
             
-            <!-- Контент заголовка -->
+            
             <div class="relative z-10 h-full flex flex-col justify-center items-start p-8 text-white">
               <span 
                 class="inline-block px-4 py-2 mb-4 rounded-full text-sm font-bold text-white shadow-lg"
@@ -108,21 +107,21 @@ const newsDetails = computed(() => {
               </p>
             </div>
             
-            <!-- Декоративные элементы -->
+            
             <div class="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
             <div class="absolute bottom-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
           </div>
 
-          <!-- Основной контент -->
+          
           <div class="p-8">
-            <!-- Краткое описание -->
+            
             <div class="mb-6">
               <p class="text-lg text-brown-700 leading-relaxed">
                 {{ newsItem.description }}
               </p>
             </div>
 
-            <!-- Полное описание -->
+            
             <div class="mb-6 bg-cookie-50 rounded-xl p-6 border-2 border-cookie-100">
               <h3 class="text-xl font-bold text-brown-800 mb-3 flex items-center gap-2">
                 <svg class="w-6 h-6 text-cookie-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +134,7 @@ const newsDetails = computed(() => {
               </p>
             </div>
 
-            <!-- Дополнительная информация -->
+            
             <div v-if="newsDetails.additionalInfo" class="mb-6 bg-beige-50 rounded-xl p-6 border-2 border-beige-200">
               <h3 class="text-lg font-bold text-brown-800 mb-3 flex items-center gap-2">
                 <svg class="w-5 h-5 text-brown-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +147,7 @@ const newsDetails = computed(() => {
               </p>
             </div>
 
-            <!-- Кнопка действия -->
+            
             <div class="flex justify-center pt-4">
               <button
                 @click="handleClose"

@@ -3,14 +3,12 @@ import { computed, onMounted, inject, ref } from 'vue'
 import CardList from '../components/CardList.vue'
 import ProductModal from '../components/ProductModal.vue'
 
-// Используем глобальное состояние избранного через inject
 const favoritesState = inject('favorites')
 if (!favoritesState) {
   throw new Error('Favorites state not provided. Make sure useFavorites is called in GlobalComponent.')
 }
 const { favorites, fetchFavorites, removeFavorite, clearAllFavorites } = favoritesState
 
-// Состояние для модального окна товара
 const selectedProduct = ref(null)
 const showModal = ref(false)
 
@@ -19,7 +17,6 @@ const openProduct = (product) => {
   showModal.value = true
 }
 
-// Преобразуем данные для совместимости с CardList, используя computed для реактивности
 const favoriteItems = computed(() => {
   return favorites.value.map(fav => ({
     ...fav.product,
@@ -31,10 +28,8 @@ const favoriteItems = computed(() => {
 const removeFromFavorites = async (item) => {
   try {
     await removeFavorite(item.favoriteId);
-    // favorites.value уже обновляется в toggleFavorite/removeFavorite
   } catch (err) {
     console.error("Ошибка при удалении из избранного:", err);
-    // При ошибке перезагружаем данные с сервера
     await fetchFavorites();
   }
 };
@@ -42,17 +37,13 @@ const removeFromFavorites = async (item) => {
 const clearFavorites = async () => {
   try {
     await clearAllFavorites();
-    // favorites.value уже очищается в clearAllFavorites
   } catch (err) {
     console.error("Ошибка при очистке избранного:", err);
-    // При ошибке перезагружаем данные с сервера
     await fetchFavorites();
   }
 };
 
 onMounted(async () => {
-  // Загружаем избранное при монтировании страницы
-  // Используем force=true чтобы гарантировать актуальные данные с сервера
   try {
     await fetchFavorites(true);
   } catch (err) {
@@ -63,7 +54,7 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-8">
-    <!-- Header Section -->
+    
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div>
         <h2 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-cookie-600 to-brown-700 bg-clip-text text-transparent mb-2">
